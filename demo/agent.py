@@ -57,6 +57,21 @@ async def default_genesis_txns():
         LOGGER.exception("Error loading genesis transactions:")
     return genesis
 
+async def builder_genesis_txns():
+    genesis = None
+    try:
+        if RUN_MODE == "docker":
+            async with ClientSession() as session:
+                async with session.get(
+                    f"https://raw.githubusercontent.com/sovrin-foundation/sovrin/master/sovrin/pool_transactions_builder_genesis"
+                ) as resp:
+                    genesis = await resp.text()
+        else:
+            with open("builder-genesis.txt", "r") as genesis_file:
+                genesis = genesis_file.read()
+    except Exception:
+        LOGGER.exception("Error loading genesis transactions:")
+    return genesis
 
 class DemoAgent:
     def __init__(
